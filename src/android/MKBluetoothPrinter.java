@@ -64,6 +64,8 @@ public class MKBluetoothPrinter extends CordovaPlugin {
     private static  String  uuid_bl ="";
     private static  String name_bl ="";
 
+    private String encoding = "iso-8859-1";
+
     /**
      * 复位打印机
      */
@@ -165,6 +167,11 @@ public class MKBluetoothPrinter extends CordovaPlugin {
             setPrinterPageWidth(args, callbackContext);
             return true;
         }
+        
+        if (action.equals("setEncoding")) {
+          encoding = args.getString(0);
+          return true;
+        } 
 
         //获取当前设置的纸张宽度
         if (action.equals("getCurrentSetPageWidth")) {
@@ -422,11 +429,11 @@ public class MKBluetoothPrinter extends CordovaPlugin {
                        }
 
                    if(LINE_BYTE_SIZE==32){
-                       MKBluetoothPrinter.printText("\n");
-                       MKBluetoothPrinter.printText("\n");
-                       MKBluetoothPrinter.printText("\n");
-                       MKBluetoothPrinter.printText("\n");
-                       MKBluetoothPrinter.printText("\n");
+                       MKBluetoothPrinter.printText("\n", encoding);
+                       MKBluetoothPrinter.printText("\n", encoding);
+                       MKBluetoothPrinter.printText("\n", encoding);
+                       MKBluetoothPrinter.printText("\n", encoding);
+                       MKBluetoothPrinter.printText("\n", encoding);
                    }
                    //结束循环时
                     MKBluetoothPrinter.selectCommand(MKBluetoothPrinter.getCutPaperCmd());
@@ -537,19 +544,19 @@ public class MKBluetoothPrinter extends CordovaPlugin {
                 MKBluetoothPrinter.selectCommand(getFontSizeCmd(fontType_int));
 
                 if (infoType == 0) {
-                    MKBluetoothPrinter.printText(text);
+                    MKBluetoothPrinter.printText(text, encoding);
                 } else if (infoType == 1) {
                     if (textArray != null && textArray.length() > 0) {
                         if (textArray.length() == 2) {
-                           MKBluetoothPrinter.printText(MKBluetoothPrinter.printTwoData(textArray.get(0).toString(), textArray.get(1).toString()));
+                           MKBluetoothPrinter.printText(MKBluetoothPrinter.printTwoData(textArray.get(0).toString(), textArray.get(1).toString()), encoding);
                         } else if (textArray.length() == 3) {
-                            MKBluetoothPrinter.printText(MKBluetoothPrinter.printThreeData(textArray.get(0).toString(), textArray.get(1).toString(), textArray.get(2).toString()));
+                            MKBluetoothPrinter.printText(MKBluetoothPrinter.printThreeData(textArray.get(0).toString(), textArray.get(1).toString(), textArray.get(2).toString()), encoding);
                         } else if (textArray.length() == 4) {
-                            MKBluetoothPrinter.printText(MKBluetoothPrinter.printFourData(textArray.get(0).toString(), textArray.get(1).toString(), textArray.get(2).toString(), textArray.get(3).toString()));
+                            MKBluetoothPrinter.printText(MKBluetoothPrinter.printFourData(textArray.get(0).toString(), textArray.get(1).toString(), textArray.get(2).toString(), textArray.get(3).toString()), encoding);
                         }
                     }
                 } else if (infoType == 2) {
-                    MKBluetoothPrinter.printText(getBarcodeCmd(text));
+                    MKBluetoothPrinter.printText(getBarcodeCmd(text), encoding);
                 } else if (infoType == 3) {
                     // 发送二维码打印图片前导指令
                     byte[] start = {0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x1B,
@@ -610,16 +617,16 @@ public class MKBluetoothPrinter extends CordovaPlugin {
                     // 发送结束指令
 
                 } else if (infoType == 5) {
-                    MKBluetoothPrinter.printText(printSeperatorLine());
+                    MKBluetoothPrinter.printText(printSeperatorLine(), encoding);
                 } else if (infoType == 6) {
-                    MKBluetoothPrinter.printText("\n");
+                    MKBluetoothPrinter.printText("\n", encoding);
                 } else if (infoType == 7) {
-                    MKBluetoothPrinter.printText(text);
+                    MKBluetoothPrinter.printText(text, encoding);
                 }else if(infoType == 8) {
                     //结束循环时
                     MKBluetoothPrinter.selectCommand(MKBluetoothPrinter.getCutPaperCmd());
                 }
-                MKBluetoothPrinter.printText("\n");
+                MKBluetoothPrinter.printText("\n", encoding);
 
 
         } catch (Exception e) {
@@ -860,10 +867,9 @@ public class MKBluetoothPrinter extends CordovaPlugin {
      *
      * @param text 要打印的文字
      */
-    public static void printText(String text) {
+    public static void printText(String text, String encoding) {
         try {
-            byte[] data = text.getBytes("gbk");
-            outputStream.write(data, 0, data.length);
+            outputStream.write(text.getBytes(encoding));
             outputStream.flush();
         } catch (IOException e) {
             e.printStackTrace();

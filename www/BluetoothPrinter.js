@@ -93,6 +93,10 @@ BluetoothPrinter.prototype.printOCLog = function(success, fail, message){
     exec(success, fail, 'MKBluetoothPrinter', 'printLog', [message]);
 }
 
+BluetoothPrinter.prototype.setEncoding = function (encoding) {
+  exec(null, null, "MKBluetoothPrinter", "setEncoding", [encoding]);
+}
+
 
 
 
